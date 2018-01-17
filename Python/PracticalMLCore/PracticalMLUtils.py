@@ -1,8 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from keras import models
 
 from PracticalMLCore.SeriesData import SeriesData
 
+def build_model(model_params):
+    model = models.Sequential
+
+    return model
 
 def vectorize_sequece(sequence, dimensions=10000):
     results = np.zeros((len(sequence), dimensions))
@@ -54,3 +59,11 @@ def plot_metrics(metrics):
 
 def plot_add_series(series_data):
     plt.plot(series_data.x_data, series_data.y_data, series_data.series_style, label=series_data.series_label)
+
+def show_plot(x, y, xlabel, ylabel, legend=False):
+    plt.plot(x, y)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    if(legend == True):
+        plt.legend()
+    plt.show()
