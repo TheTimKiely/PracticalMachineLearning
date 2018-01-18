@@ -25,9 +25,9 @@ from keras.utils import to_categorical
 (raw_train_images, raw_train_labels), (raw_test_images, raw_test_labels) = mnist.load_data()
 
 train_samples = 60000
-train_images = raw_train_images[:60000]
-train_labels = raw_train_labels[:60000]
-train_images = train_images.reshape(60000, 28, 28, 1)
+train_images = raw_train_images[:train_samples]
+train_labels = raw_train_labels[:train_samples]
+train_images = train_images.reshape(train_samples, 28, 28, 1)
 train_images = train_images.astype('float32') / 255
 
 test_samples = 10000
@@ -48,10 +48,10 @@ history = model.fit(train_images, train_labels, epochs=5, batch_size=64)
 #plot_metrics(history)
 
 test_loss, test_acc = model.evaluate(test_images, test_labels)
-print(f'Accuracy: {test_acc} Loss: {test_loss}')
+print('Accuracy: {} Loss: {}'.format(test_acc, test_loss))
 
 #plt.imshow(raw_test_images[0], cmap=plt.cm.gray_r, interpolation='nearest')
 #prediction = model.predict(test_images)
 #print(f'Prediction: {prediction}')
 
-print(f'Time: {time.time() - start}')
+print('Time: {}'.format(time.time() - start))
