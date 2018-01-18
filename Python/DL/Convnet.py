@@ -3,7 +3,6 @@ from keras import layers
 import time
 import matplotlib.pyplot as plt
 
-from PracticalMLCore.PracticalMLUtils import plot_metrics
 
 start = time.time()
 model = models.Sequential()
@@ -24,13 +23,13 @@ from keras.utils import to_categorical
 
 (raw_train_images, raw_train_labels), (raw_test_images, raw_test_labels) = mnist.load_data()
 
-train_samples = 60000
+train_samples = 60
 train_images = raw_train_images[:train_samples]
 train_labels = raw_train_labels[:train_samples]
 train_images = train_images.reshape(train_samples, 28, 28, 1)
 train_images = train_images.astype('float32') / 255
 
-test_samples = 10000
+test_samples = 10
 test_images = raw_test_images[:test_samples]
 test_labels = raw_test_labels[:test_samples]
 test_images = test_images.reshape(test_samples, 28, 28, 1)
