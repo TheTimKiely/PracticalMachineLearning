@@ -14,7 +14,9 @@ from keras import optimizers
 from keras.applications import VGG16
 print(f'Import time: {time.time() - s}')
 
-base_dir = 'D:\code\ML\data\dogs_and_cats'
+base_dir =  os.path.abspath(os.path.join(os.getcwd() ,"../../../data/dogs_and_cats"))
+
+print(f'Using data directory: {base_dir}')
 
 train_dir = os.path.join(base_dir, 'train')
 validation_dir = os.path.join(base_dir, 'validation')
