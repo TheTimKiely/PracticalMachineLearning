@@ -2,9 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from keras import models
 
-from practicalml.core import SeriesData
-
-
 def build_model(model_params):
     model = models.Sequential
 
@@ -26,14 +23,17 @@ def print_encoded_text(encoded_text, words, label = '?'):
     text = '  '.join(words.get(i-3, '?') for i in encoded_text)
     print(f'Text: {text}\n\tLabel: {label}')
 
+class SeriesData:
 
+    def __init__(self):
+        self._x_label = None;
 
 
 class MetricsPlotter(object):
     def __init__(self):
         pass
 
-    def build_series(epochs, data, style, label):
+    def build_series(self, epochs, data, style, label):
         series_data = SeriesData()
         series_data.x_data = epochs
         series_data.y_data = data
@@ -41,7 +41,7 @@ class MetricsPlotter(object):
         series_data.series_label = label
         return series_data
 
-    def plot_metrics(metrics):
+    def plot_metrics(self, metrics):
         loss = metrics.history['loss']
         val_loss = metrics.history['val_loss']
         epochs = range(1, len(loss) + 1)
@@ -63,13 +63,16 @@ class MetricsPlotter(object):
         plt.ylabel('Loss')
         plt.legend()
 
-    def plot_add_series(series_data):
+    def plot_add_series(self, series_data):
         plt.plot(series_data.x_data, series_data.y_data, series_data.series_style, label=series_data.series_label)
 
-    def show_plot(x, y, xlabel, ylabel, legend=False):
+    def show_plot(self, x, y, xlabel, ylabel, legend=False):
         plt.plot(x, y)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         if (legend == True):
             plt.legend()
+        plt.show()
+
+    def show(self):
         plt.show()

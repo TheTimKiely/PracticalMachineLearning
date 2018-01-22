@@ -1,5 +1,10 @@
+import time
 from keras import models
 from keras import layers
+from keras import optimizers
+from keras.preprocessing.image import ImageDataGenerator
+from practicalml.dl import keras_models
+
 
 class NeuralNetwork(object):
     def __init__(self, ml_config):
@@ -81,6 +86,12 @@ class ConvnetDogsVsCats(NeuralNetwork):
     def fit_and_save(self):
         if(self.TrainGenerator == None) or (self.ValidationGenerator == None):
             self.prepare_data()
+
+        conv_base = None
+        if(self.Config.Mode == 'p'):
+            start = time.time()
+            conv_base = keras_models.ModelRepository().get_vgg16()
+            print(f'elapsed: {time.time() - start}')
 
         history = self._model.fit_generator(self.TrainGenerator,
                                             steps_per_epoch=100,

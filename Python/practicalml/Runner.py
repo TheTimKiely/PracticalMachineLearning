@@ -6,7 +6,7 @@ from core.PracticalMLUtils import MetricsPlotter
 from dl.factories import NetworkFactory
 
 class MLConfig(object):
-    def __init__(self, nn_type, layers, nodes, epochs, verbose):
+    def __init__(self, nn_type, mode, layers, nodes, epochs, verbose):
         self._verbose = verbose
         self._nn_type = nn_type
         # Properties probably aren't necessary, so experimenting with public fields
@@ -16,6 +16,7 @@ class MLConfig(object):
         self.TrainDir = ''
         self.TestDir = ''
         self.ValidationDir = ''
+        self.Mode = mode
 
     @property
     def Verbose(self):
@@ -35,21 +36,24 @@ def parse_command_line(params):
     nodes = 16
     epochs = 10
     nn_type = 'cnn'
+    mode = 'p'
     verbose = False
-    opts, args = getopt.getopt(params, shortopts='t:l:n:e:v:')
+    opts, args = getopt.getopt(params, shortopts='t:m:l:n:e:v:')
     for opt, arg in opts:
-        if(opt == '-t'):
-            nn_type = arg
+        if (opt == '-e'):
+            epochs = int(arg)
         elif(opt == '-l'):
             layers = int(arg)
+        elif(opt == '-m'):
+            mode = arg
         elif(opt == '-n'):
             nodes = int(arg)
-        elif(opt == '-e'):
-            epochs = int(arg)
+        elif (opt == '-t'):
+            nn_type = arg
         elif(opt == '-v'):
             verbose = bool(opt)
 
-    return MLConfig(nn_type, layers, nodes, epochs, verbose)
+    return MLConfig(nn_type, mode, layers, nodes, epochs, verbose)
 
 def prepare_convnet_dogs_and_cats(network):
     network.Config.TestDir = 'd:\code\ml\data\dogs_and_cats\\test'
@@ -80,5 +84,5 @@ def main(params):
 if(__name__ == '__main__'):
     params = sys.argv[1:]
     # overwrite params for specific tests
-    params = ['-t', 'DvsC', '-e', '5', '-l', '3', '-n', '64', '-v', 'True']
+    params = ['-t', 'DvsC', '-m', 'p', '-e', '5', '-l', '3', '-n', '64', '-v', 'True']
     main(params)
