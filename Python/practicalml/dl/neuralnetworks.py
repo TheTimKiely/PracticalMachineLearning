@@ -1,4 +1,4 @@
-import time
+import os, time
 from keras import models
 from keras import layers
 from keras import optimizers
@@ -16,11 +16,41 @@ class NeuralNetwork(object):
         self.ModelFile = ''
         self.HistoryFile = 'FitHistory.pkl'
 
+
+    @staticmethod
+    def plot_filter():
+        from keras.applications import VGG16
+        from keras import backend as K
+        model = keras_models.ModelRepository.get_vgg16()
+
+
     @staticmethod
     def plot_activation():
         from keras.models import load_model
-        model_path = path.abspath(os.path.join(os.getcwd() ,"../../../data/dogs_and_cats"))
-
+        from keras.preprocessing import image
+        import numpy as np
+        model_path = os.path.abspath(os.path.join(os.getcwd() ,"../../../../models/DogsVsCats_small_1.h5"))
+        model = load_model(model_path)
+        print(model.summary())
+        img_path =  os.path.abspath(os.path.join(os.getcwd() ,"../../../../data/dogs_and_cats/test/dogs/dog.1045.jpg"))
+        img = image.load_img(img_path, target_size=(150, 150))
+        img_tensor = image.img_to_array(img)
+        print(img_tensor.shape)
+        img_tensor = np.expand_dims(img_tensor, axis=0)
+        print(img_tensor.shape)
+        img_tensor /= 255
+        import matplotlib.pyplot as plt
+        plt.imshow(img_tensor[0])
+        #plt.show()
+        plt.clf()
+        from keras import models
+        layer_outputs = [layer.output for layer in model.layers[:8]]
+        activation_model =models.Model(inputs=model.input, outputs=layer_outputs)
+        activations = activation_model.predict(img_tensor)
+        first_layer_activation = activations[0]
+        plt.matshow(first_layer_activation[0,:,:,7], cmap='viridis')
+        plt.show()
+        #text = input('Press any key to continue...')
 
 
     def log(self, msg):
@@ -154,3 +184,6 @@ class ConvnetDogsVsCats(NeuralNetwork):
 
 class RecurrentNeuralNetwork(NeuralNetwork):
     pass
+
+
+NeuralNetwork.plot_activation()

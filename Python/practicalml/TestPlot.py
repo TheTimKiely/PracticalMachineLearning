@@ -1,6 +1,6 @@
 import numpy as np
 import  matplotlib
-matplotlib.use('TkAgg')
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
 print(plt.get_backend())
@@ -14,3 +14,4 @@ plt.ylabel('voltage (mV)')
 plt.title('About as simple as it gets, folks')
 plt.grid(True)
 plt.show()
+plt.savefig('plt.png')
