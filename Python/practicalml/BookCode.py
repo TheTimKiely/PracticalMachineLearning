@@ -4,7 +4,7 @@ from keras.preprocessing.image import ImageDataGenerator
 
 import time
 
-from practicalml.core.utils import MetricsPlotter
+from core.utils import MetricsPlotter
 
 s = time.time()
 from keras.models import load_model
@@ -22,7 +22,7 @@ test_dir = os.path.join(base_dir, 'test')
 
 datagen = ImageDataGenerator(rescale=1./255)
 batch_size = 10
-from keras_models import ModelRepository
+from dl.keras_models import ModelRepository
 model_path = 'D:\code\ML\models\\vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5'
 conv_base = ModelRepository().get_vgg16()
 
