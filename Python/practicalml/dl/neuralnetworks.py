@@ -16,6 +16,13 @@ class NeuralNetwork(object):
         self.ModelFile = ''
         self.HistoryFile = 'FitHistory.pkl'
 
+    @staticmethod
+    def plot_activation():
+        from keras.models import load_model
+        model_path = path.abspath(os.path.join(os.getcwd() ,"../../../data/dogs_and_cats"))
+
+
+
     def log(self, msg):
         if(self.Config.Verbose == True):
             print(self._model.summary())

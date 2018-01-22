@@ -6,7 +6,7 @@ from core.PracticalMLUtils import MetricsPlotter
 from dl.factories import NetworkFactory
 
 class MLConfig(object):
-    def __init__(self, nn_type, mode, layers, nodes, epochs, verbose):
+    def __init__(self, nn_type, mode, layers = 4, nodes = 16, epochs = 10, verbose = False):
         self._verbose = verbose
         self._nn_type = nn_type
         # Properties probably aren't necessary, so experimenting with public fields
