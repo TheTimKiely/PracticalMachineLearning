@@ -2,17 +2,18 @@ import getopt
 import sys
 import practicalml, dl
 from dl.neuralnetworks import ConvnetDogsVsCats
-from core.PracticalMLUtils import MetricsPlotter
+from core.utils import MetricsPlotter, ProcessorInfo
 from dl.factories import NetworkFactory
 
 class MLConfig(object):
-    def __init__(self, nn_type, mode, layers = 4, nodes = 16, epochs = 10, verbose = False):
+    def __init__(self, nn_type, mode, layers = 4, nodes = 16, epochs = 10, batch_size = 32, verbose = False):
         self._verbose = verbose
         self._nn_type = nn_type
         # Properties probably aren't necessary, so experimenting with public fields
         self.Layers = layers
         self.Nodes = nodes
         self._epochs = epochs
+        self.BatchSize = batch_size
         self.TrainDir = ''
         self.TestDir = ''
         self.ValidationDir = ''
@@ -35,12 +36,15 @@ def parse_command_line(params):
     layers = 3
     nodes = 16
     epochs = 10
+    batch_size = 64
     nn_type = 'cnn'
     mode = 'p'
-    verbose = False
-    opts, args = getopt.getopt(params, shortopts='t:m:l:n:e:v:')
+    verbose = 'q'
+    opts, args = getopt.getopt(params, shortopts='t:m:l:n:e:b:v:')
     for opt, arg in opts:
-        if (opt == '-e'):
+        if(opt == '-b'):
+            batch_size = int(arg)
+        elif (opt == '-e'):
             epochs = int(arg)
         elif(opt == '-l'):
             layers = int(arg)
@@ -51,9 +55,9 @@ def parse_command_line(params):
         elif (opt == '-t'):
             nn_type = arg
         elif(opt == '-v'):
-            verbose = bool(opt)
+            verbose = arg
 
-    return MLConfig(nn_type, mode, layers, nodes, epochs, verbose)
+    return MLConfig(nn_type, mode, layers, nodes, epochs, batch_size, verbose)
 
 def prepare_convnet_dogs_and_cats(network):
     network.Config.TestDir = 'd:\code\ml\data\dogs_and_cats\\test'
@@ -84,5 +88,6 @@ def main(params):
 if(__name__ == '__main__'):
     params = sys.argv[1:]
     # overwrite params for specific tests
-    params = ['-t', 'DvsC', '-m', 'p', '-e', '5', '-l', '3', '-n', '64', '-v', 'True']
-    main(params)
+    cnn_params = ['-t', 'DvsC', '-m', 'p', '-e', '5', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
+    rnn_params = ['-t', 'rnn', '-m', 'p', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
+    main(rnn_params)

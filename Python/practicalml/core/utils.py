@@ -28,6 +28,19 @@ class SeriesData:
     def __init__(self):
         self._x_label = None;
 
+class ProcessorInfo(object):
+    '''
+    check "sudo pip3 list" for tensorflow-gpu
+    the tensorflow device can be set with tf.device('')
+    '''
+    @staticmethod
+    def show_devices():
+        from tensorflow.python.client import device_lib
+        return device_lib.list_local_devices()
+
+    @staticmethod
+    def show_gpu_devices():
+        return [d for d in ProcessorInfo.show_devices() if d.device_type == 'GPU']
 
 class MetricsPlotter(object):
     def __init__(self):

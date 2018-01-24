@@ -19,21 +19,6 @@ class ModelParameters(object):
         self._metrics = []
         self._layers = []
 
-    @property
-    def X(self):
-        return self._X
-
-    @X.setter
-    def X(self, X):
-        self._X = X
-
-    @property
-    def y(self):
-        return self._y
-
-    @y.setter
-    def y(self, y):
-        self._y = y
 
     @property
     def loss_function(self):
