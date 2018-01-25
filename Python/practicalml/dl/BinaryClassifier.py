@@ -6,7 +6,7 @@ from keras import layers
 from keras import models
 from keras.datasets import imdb
 
-from practicalml.core import ModelParameters
+from practicalml.core import configuration
 from practicalml.core import ModelTrainer
 from practicalml.core import vectorize_sequece
 
@@ -40,7 +40,7 @@ y_val = y_train[:10000]
 partial_y_train = y_train[10000:]
 
 start = time.time()
-params = ModelParameters()
+params = configuration()
 params.X = partial_X_train
 params.y = partial_y_train
 params.epochs = 4

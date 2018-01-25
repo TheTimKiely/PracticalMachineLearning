@@ -1,0 +1,13 @@
+import os
+
+class MLEntity(object):
+
+    def unique_file_name(self, file_property, attribute_property):
+        while(os.path.isfile(file_property.__get__(self))):
+            attribute_property.__set__(self, attribute_property.__get__(self) + 1)
+        return file_property.__get__(self)
+
+    '''verbosity levels: s(silence) q(quiet) m(moderate) d(debug) (noisy)'''
+    def log(self, msg, verbosity='d'):
+        if(self.Config.Verbose == verbosity):
+            print(msg)

@@ -1,9 +1,11 @@
 import getopt
 import sys
+from practicalml.core.data_container import DataContainer
 import practicalml, dl
+from core.plotting import *
 from dl.neuralnetworks import ConvnetDogsVsCats
-from core.utils import MetricsPlotter, ProcessorInfo
-from dl.factories import NetworkFactory
+from core.utils import ProcessorInfo
+from practicalml.core.factories import ModelFactory
 
 class MLConfig(object):
     def __init__(self, nn_type, mode, layers = 4, nodes = 16, epochs = 10, batch_size = 32, verbose = False):
@@ -40,10 +42,14 @@ def parse_command_line(params):
     nn_type = 'cnn'
     mode = 'p'
     verbose = 'q'
-    opts, args = getopt.getopt(params, shortopts='t:m:l:n:e:b:v:')
+    sample_size
+    dataset = ''
+    opts, args = getopt.getopt(params, shortopts='t:m:l:n:d:e:b:s:v:')
     for opt, arg in opts:
         if(opt == '-b'):
             batch_size = int(arg)
+        elif(opt == '-d'):
+            dataset = arg
         elif (opt == '-e'):
             epochs = int(arg)
         elif(opt == '-l'):
@@ -52,12 +58,14 @@ def parse_command_line(params):
             mode = arg
         elif(opt == '-n'):
             nodes = int(arg)
+        elif(opt == '-s'):
+            samples_size = int(arg)
         elif (opt == '-t'):
             nn_type = arg
         elif(opt == '-v'):
             verbose = arg
 
-    return MLConfig(nn_type, mode, layers, nodes, epochs, batch_size, verbose)
+    return dataset, samples_size, MLConfig(nn_type, mode, layers, nodes, epochs, batch_size, verbose)
 
 def prepare_convnet_dogs_and_cats(network):
     network.Config.TestDir = 'd:\code\ml\data\dogs_and_cats\\test'
@@ -71,23 +79,47 @@ def prepare_convnet_dogs_and_cats(network):
 
 def main(params):
     print(f'Running main with args: {params}')
-    ml_config = parse_command_line(params)
-    network = NetworkFactory.create(ml_config)
+    dataset, sample_size, ml_config = parse_command_line(params)
+    network = ModelFactory.create(ml_config)
 
     if(isinstance(network, practicalml.dl.neuralnetworks.ConvnetDogsVsCats)):
         prepare_convnet_dogs_and_cats(network)
 
+
+    if(isinstance(network, practicalml.dl.neuralnetworks.NeuralNetwork)):
+        process_dl_model(dataset, sample_size)
+    else:
+        process_ml_model(dataset, sample_size)
+
+@staticmethod
+def process_ml_model(network, dataset, sample_size):
+    data_container = DataContainer(dataset)
+    data_container.prepare_data(sample_size)
+    network.evaluate(data_container)
+
+@staticmethod
+def process_dl_model(network, dataset, sample_size):
+    #X_test = network.TestData
+    network.prepare_data(dataset, sample_size)
     network.build_model()
-    network.prepare_data()
     history = network.fit_and_save()
     plotter = MetricsPlotter()
     plotter.plot_metrics(history)
-    history = network.evaluate()
-    prediction = network.predict()
+    plotter.show()
+    #history = network.evaluate()
+    X_test, y_test = network.TestData
+    prediction = network.predict(network.X_test)
+    accuracy = y_test - prediction
 
 if(__name__ == '__main__'):
     params = sys.argv[1:]
     # overwrite params for specific tests
     cnn_params = ['-t', 'DvsC', '-m', 'p', '-e', '5', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
     rnn_params = ['-t', 'rnn', '-m', 'p', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
-    main(rnn_params)
+    lstm_params = ['-t', 'lstm', '-m', 't', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
+    climate_lstm_params = ['-r', '200000', '-d', 'jena_climate', '-t', 'lstm', '-m', 't', '-e', '10', '-l', '3', '-n',
+                           '64', '-b', 32, '-v', 'd']
+    climate_ml_params = ['-r', '200000', '-d', 'jena_climate', '-t', 'ml', '-m', 't', '-e', '10', '-l', '3', '-n',
+                           '64', '-b', 32, '-v', 'd']
+    climate_math_params = ['-r', '200000', '-d', 'jena_climate', '-t', 'math', '-m', 't', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
+    main(climate_math_params)
