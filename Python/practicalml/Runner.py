@@ -1,10 +1,11 @@
 import getopt
 import sys
+import numpy as np
 from practicalml.core.data_container import DataContainer
 import practicalml, dl
-from core.plotting import *
-from dl.neuralnetworks import ConvnetDogsVsCats
-from core.utils import ProcessorInfo
+from practicalml.core.plotting import *
+from practicalml.dl.neuralnetworks import ConvnetDogsVsCats
+from practicalml.core.utils import ProcessorInfo
 from practicalml.core.factories import ModelFactory
 
 class MLConfig(object):
@@ -42,7 +43,7 @@ def parse_command_line(params):
     nn_type = 'cnn'
     mode = 'p'
     verbose = 'q'
-    sample_size
+    sample_size = 0
     dataset = ''
     opts, args = getopt.getopt(params, shortopts='t:m:l:n:d:e:b:s:v:')
     for opt, arg in opts:
@@ -59,13 +60,13 @@ def parse_command_line(params):
         elif(opt == '-n'):
             nodes = int(arg)
         elif(opt == '-s'):
-            samples_size = int(arg)
+            sample_size = int(arg)
         elif (opt == '-t'):
             nn_type = arg
         elif(opt == '-v'):
             verbose = arg
 
-    return dataset, samples_size, MLConfig(nn_type, mode, layers, nodes, epochs, batch_size, verbose)
+    return dataset, sample_size, MLConfig(nn_type, mode, layers, nodes, epochs, batch_size, verbose)
 
 def prepare_convnet_dogs_and_cats(network):
     network.Config.TestDir = 'd:\code\ml\data\dogs_and_cats\\test'
@@ -89,15 +90,14 @@ def main(params):
     if(isinstance(network, practicalml.dl.neuralnetworks.NeuralNetwork)):
         process_dl_model(dataset, sample_size)
     else:
-        process_ml_model(dataset, sample_size)
+        process_ml_model(network, dataset, sample_size)
 
-@staticmethod
 def process_ml_model(network, dataset, sample_size):
     data_container = DataContainer(dataset)
     data_container.prepare_data(sample_size)
-    network.evaluate(data_container)
+    batch_maes = network.evaluate(data_container)
+    print(np.mean(batch_maes))
 
-@staticmethod
 def process_dl_model(network, dataset, sample_size):
     #X_test = network.TestData
     network.prepare_data(dataset, sample_size)
@@ -117,9 +117,9 @@ if(__name__ == '__main__'):
     cnn_params = ['-t', 'DvsC', '-m', 'p', '-e', '5', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
     rnn_params = ['-t', 'rnn', '-m', 'p', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
     lstm_params = ['-t', 'lstm', '-m', 't', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
-    climate_lstm_params = ['-r', '200000', '-d', 'jena_climate', '-t', 'lstm', '-m', 't', '-e', '10', '-l', '3', '-n',
+    climate_lstm_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'lstm', '-m', 't', '-e', '10', '-l', '3', '-n',
                            '64', '-b', 32, '-v', 'd']
-    climate_ml_params = ['-r', '200000', '-d', 'jena_climate', '-t', 'ml', '-m', 't', '-e', '10', '-l', '3', '-n',
+    climate_ml_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'ml', '-m', 't', '-e', '10', '-l', '3', '-n',
                            '64', '-b', 32, '-v', 'd']
-    climate_math_params = ['-r', '200000', '-d', 'jena_climate', '-t', 'math', '-m', 't', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
+    climate_math_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'math', '-m', 't', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
     main(climate_math_params)

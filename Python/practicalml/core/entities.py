@@ -1,6 +1,8 @@
 import os
 
 class MLEntity(object):
+    def __init__(self):
+        self.Base_Directory = os.path.abspath(os.path.join(os.getcwd(), '../../..'))
 
     def unique_file_name(self, file_property, attribute_property):
         while(os.path.isfile(file_property.__get__(self))):

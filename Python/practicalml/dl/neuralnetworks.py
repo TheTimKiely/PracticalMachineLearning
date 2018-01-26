@@ -35,7 +35,6 @@ class NeuralNetwork(MLEntity):
         self._tokenizer = None
         self.ModelParam = ModelParameters()
         #self.Data_Directory2 = os.path.abspath(os.path.join(os.getcwd(), os.path.join('..', '..', '..', 'data')))
-        self.Base_Directory = os.path.abspath(os.path.join(os.getcwd(), '../../..'))
 
 
     @staticmethod
@@ -407,27 +406,6 @@ class RecurrentNeuralNetwork(NeuralNetwork):
     def predict(self, X):
         prediction = self.Model.predict(X, steps=1)
         return prediction
-
-    def build_generator(self, data, lookback, delay, min_index, max_index, shuffle, batch_size, step):
-        if(max_index is None):
-            max_index = len(data) - delay - 1
-        i = min_index + lookback
-        while 1:
-            if shuffle:
-                rows = np.random.randomint(min_index + lookback, max_index, size = batch_size)
-            else:
-                if i + batch_size >= max_index:
-                    i = min_index + lookback
-                rows = np.arange(i, min(i + batch_size, max_index))
-                i += len(rows)
-            samples = np.zeros((len(rows),
-                                lookback // step,
-                                data.shape[-1]))
-            targets = np.zeros((len(rows),))
-            for j, row in enumerate(rows):
-                indices = range(rows[j] - lookback, rows[j], step)
-                targets[j]= data[rows[j] + delay[1]]
-            yield samples, targets
 
     def prepare_data(self, dataset = 'imdb', sample_size=1000000):
         if(dataset == 'imdb'):
