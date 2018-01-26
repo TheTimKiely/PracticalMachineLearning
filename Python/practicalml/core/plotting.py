@@ -28,9 +28,24 @@ class MetricsPlotter(Plotter):
         series_data.series_label = label
         return series_data
 
-    def plot_metrics(self, metrics):
-        loss = metrics.history['loss']
-        val_loss = metrics.history['val_loss']
+    def plot_histories(self, histories, figures):
+        for history in histories:
+            self.plot_metrics(history, figures)
+
+    def plot_metrics(self, metrics, figures):
+        history = metrics.History.history
+        # change to metrics['loss']
+        for layout in figures:
+            plt.figure(layout[0])
+            for series_name in layout[1]:
+                series_data = history[series_name]
+                epochs = range(1, len(series_data) + 1)
+                series = self.build_series(epochs, series_data, metrics.SeriesStyle, f'{metrics.Name} {series_name}')
+                self.add_series(series)
+
+        '''        
+        loss = history['loss']
+        val_loss = history['val_loss']
         epochs = range(1, len(loss) + 1)
 
         loss_series = self.build_series(epochs, loss, 'bo', 'Training Loss')
@@ -38,13 +53,13 @@ class MetricsPlotter(Plotter):
         val_loss_series = self.build_series(epochs, val_loss, 'b', 'Validation Loss')
         self.add_series(val_loss_series)
         plt.clf()
-        acc = metrics.history['acc']
-        val_acc = metrics.history['val_acc']
+        acc = history['acc']
+        val_acc = history['val_acc']
         acc_series = self.build_series(epochs, acc, 'ro', 'Training Accuracy')
         self.add_series(acc_series)
         val_acc_series = self.build_series(epochs, val_acc, 'r', 'Validation Accuracy')
         self.add_series(val_acc_series)
-
+        '''
         plt.title('Training & Validation Loss')
         plt.xlabel('Epochs')
         plt.ylabel('Loss')

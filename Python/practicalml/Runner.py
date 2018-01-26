@@ -1,39 +1,15 @@
 import getopt
 import sys
 import numpy as np
+
+from practicalml.core.configuration import *
 from practicalml.core.data_container import DataContainer
 import practicalml, dl
+from practicalml.core.entities import *
 from practicalml.core.plotting import *
 from practicalml.dl.neuralnetworks import ConvnetDogsVsCats
 from practicalml.core.utils import ProcessorInfo
 from practicalml.core.factories import ModelFactory
-
-class MLConfig(object):
-    def __init__(self, nn_type, mode, layers = 4, nodes = 16, epochs = 10, batch_size = 32, verbose = False):
-        self._verbose = verbose
-        self._nn_type = nn_type
-        # Properties probably aren't necessary, so experimenting with public fields
-        self.Layers = layers
-        self.Nodes = nodes
-        self._epochs = epochs
-        self.BatchSize = batch_size
-        self.TrainDir = ''
-        self.TestDir = ''
-        self.ValidationDir = ''
-        self.Mode = mode
-
-    @property
-    def Verbose(self):
-        return self._verbose
-
-    @property
-    def NnType(self):
-        return self._nn_type
-
-    @property
-    def Epochs(self):
-        return self._epochs
-
 
 def parse_command_line(params):
     layers = 3
@@ -45,7 +21,9 @@ def parse_command_line(params):
     verbose = 'q'
     sample_size = 0
     dataset = ''
-    opts, args = getopt.getopt(params, shortopts='t:m:l:n:d:e:b:s:v:')
+    metrics = ['acc']
+    model_config = ModelParameters()
+    opts, args = getopt.getopt(params, shortopts='t:m:l:o:n:d:e:b:s:v:x:')
     for opt, arg in opts:
         if(opt == '-b'):
             batch_size = int(arg)
@@ -54,7 +32,9 @@ def parse_command_line(params):
         elif (opt == '-e'):
             epochs = int(arg)
         elif(opt == '-l'):
-            layers = int(arg)
+            model_config.loss_function = arg
+        elif(opt == '-o'):
+            model_config.optimizer = arg
         elif(opt == '-m'):
             mode = arg
         elif(opt == '-n'):
@@ -65,8 +45,13 @@ def parse_command_line(params):
             nn_type = arg
         elif(opt == '-v'):
             verbose = arg
+        elif(opt == 'x'):
+            metrics = arg
 
-    return dataset, sample_size, MLConfig(nn_type, mode, layers, nodes, epochs, batch_size, verbose)
+    ml_config = MLConfig(nn_type, mode, layers, nodes, epochs, batch_size, verbose)
+    model_config.metrics = metrics
+    ml_config.ModelConfig = model_config
+    return dataset, sample_size, ml_config
 
 def prepare_convnet_dogs_and_cats(network):
     network.Config.TestDir = 'd:\code\ml\data\dogs_and_cats\\test'
@@ -78,10 +63,58 @@ def prepare_convnet_dogs_and_cats(network):
     if(copyFiles == True):
         network.copy_image_files('D:\code\ML\data\dogs_and_cats\kaggle\\train\dogs', 'd:\code\ml\data\dogs_and_cats')
 
+def climate_prediction(dataset, sample_size, ml_config):
+    data_container = DataContainer(dataset)
+    data_container.prepare_data(sample_size)
+    metrics = []
+
+    ml_model = ModelFactory.create(ml_config)
+    if ml_model.Config.Mode == 't':
+        ml_model.build_model(data_container)
+        ml_history = ml_model.fit_and_save()
+    elif ml_model.Config.Mode == 'p':
+        ml_model.load_from_file(data_container)
+        ml_history = ml_model.evaluate()
+    #ml_history = ml_model.evaluate()
+    ml_metrics = ModelMetrics('MlMetrics', ml_history, 'bo')
+    metrics.append(ml_metrics)
+
+    ml_config.NnType = 'gru'
+    gru_model = ModelFactory.create(ml_config)
+    gru_model.build_model(data_container)
+    gru_history = gru_model.fit_and_save()
+    gru_metrics = ModelMetrics('GruMetrics', gru_history, 'r')
+    metrics.append(gru_metrics)
+
+
+    ml_config.ModelConfig.Dropout = 0.2
+    ml_config.ModelConfig.RecurrentDropout = 0.2
+    gru_dropout_model = ModelFactory.create(ml_config)
+    gru_dropout_model.build_model(data_container)
+    gru_dropout_history = gru_model.fit_and_save()
+    gru_dropout_metrics = ModelMetrics('GruDropoutMetrics', gru_dropout_history, 'g')
+    metrics.append(gru_dropout_metrics)
+
+    ml_config.ModelConfig.LayerCount = 2
+    gru_two_layers_model = ModelFactory.create(ml_config)
+    gru_two_layers_model.build_model(data_container)
+    gru_two_layers_history = gru_model.fit_and_save()
+    gru_two_layers_metrics = ModelMetrics('GruDropoutMetrics', gru_two_layers_history, 'k')
+    metrics.append(gru_two_layers_metrics)
+
+    plotter = MetricsPlotter()
+    plotter.plot_histories(metrics, ((0, ('loss', 'val_loss')),))
+    plotter.show()
+
 def main(params):
     print(f'Running main with args: {params}')
     dataset, sample_size, ml_config = parse_command_line(params)
+
+    climate_prediction(dataset, sample_size, ml_config)
+    exit()
+
     network = ModelFactory.create(ml_config)
+
 
     if(isinstance(network, practicalml.dl.neuralnetworks.ConvnetDogsVsCats)):
         prepare_convnet_dogs_and_cats(network)
@@ -114,12 +147,13 @@ def process_dl_model(network, dataset, sample_size):
 if(__name__ == '__main__'):
     params = sys.argv[1:]
     # overwrite params for specific tests
-    cnn_params = ['-t', 'DvsC', '-m', 'p', '-e', '5', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
-    rnn_params = ['-t', 'rnn', '-m', 'p', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
-    lstm_params = ['-t', 'lstm', '-m', 't', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
-    climate_lstm_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'lstm', '-m', 't', '-e', '10', '-l', '3', '-n',
+    cnn_params = ['-t', 'DvsC', '-m', 'p', '-e', '5', '-n', '64', '-b', 32, '-v', 'd']
+    rnn_params = ['-t', 'rnn', '-m', 'p', '-e', '10', '-n', '64', '-b', 32, '-v', 'd']
+    lstm_params = ['-t', 'lstm', '-m', 't', '-e', '10','-n', '64', '-b', 32, '-v', 'd']
+    climate_lstm_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'lstm', '-m', 't', '-e', '10', '-n',
                            '64', '-b', 32, '-v', 'd']
-    climate_ml_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'ml', '-m', 't', '-e', '10', '-l', '3', '-n',
+    climate_ml_params = ['-m', 't', '-s', '200000', '-d', 'jena_climate', '-t', 'ml', '-l', 'mae', '-o', 'rmsprop',
+                         '-e', '20', '-n',
                            '64', '-b', 32, '-v', 'd']
-    climate_math_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'math', '-m', 't', '-e', '10', '-l', '3', '-n', '64', '-b', 32, '-v', 'd']
-    main(climate_math_params)
+    climate_math_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'math', '-m', 't', '-e', '10', '-n', '64', '-b', 32, '-v', 'd']
+    main(climate_ml_params)

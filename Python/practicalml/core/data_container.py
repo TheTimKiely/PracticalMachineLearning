@@ -1,12 +1,13 @@
 import os
 import numpy as np
-from practicalml.core.entities import MLEntity
+from practicalml.core.entities import MLEntityBase
 
 
-class DataContainer(MLEntity):
+class DataContainer(MLEntityBase):
     def __init__(self, dataset):
         super(DataContainer, self).__init__()
-        self.Dataset = dataset
+        self.DatasetName = dataset
+        self.Data = None
         self.val_steps = 0
         self.test_steps = 0
         self.train_generator = None
@@ -56,6 +57,8 @@ class DataContainer(MLEntity):
                 indices = range(rows[j] - lookback, rows[j], step)
                 samples[j] = data[indices]
                 targets[j] = data[rows[j] + delay][1]
+            #print(f'lookback:{lookback}, delay:{delay}, min_index{min_index}, max_index:{max_index}, shuffle{shuffle}, batch_size:{batch_size}, step: {step}')
+            #print(f'Sample: {samples[0,0,0]} Target: {targets[0]}')
             yield samples, targets
 
     def prepare_data(self, sample_size):
@@ -68,16 +71,15 @@ class DataContainer(MLEntity):
         header = all_lines[0].split(',')
         lines = all_lines[1:]
 
-        data = np.zeros((len(lines), len(header) - 1))
+        raw_data = np.zeros((len(lines), len(header) - 1))
         for i, line in enumerate(lines):
             values = [float(x) for x in line.split(',')[1:]]
-            data[i,:] = values
+            raw_data[i,:] = values
 
-        mean = data[:sample_size].mean(axis=0)
-        regularized_data = data - mean
+        mean = raw_data[:sample_size].mean(axis=0)
+        regularized_data = raw_data - mean
         std = regularized_data[:sample_size].std(axis = 0)
-        std_data = regularized_data / std
-        std_data = data
+        self.Data = regularized_data / std
 
         lookback =1440
         step =6
@@ -85,15 +87,15 @@ class DataContainer(MLEntity):
         batch_size = 128
         min_index = 0
         max_index = 200000
-        self.train_generator = self.generator(std_data, lookback, delay, min_index, max_index, False, batch_size, step)
+        self.train_generator = self.generator(self.Data, lookback, delay, min_index, max_index, True, batch_size, step)
         min_index = 200001
         max_index = 300000
         self.val_steps = (max_index - min_index - lookback) // batch_size
-        self.val_generator = self.generator(std_data, lookback, delay, min_index, max_index, False, batch_size, step)
+        self.val_generator = self.generator(self.Data, lookback, delay, min_index, max_index, False, batch_size, step)
         min_index = 300001
         max_index = None
-        self.test_steps = (len(std_data) - min_index - lookback) // batch_size
-        self.test_generator = self.generator(std_data, lookback, delay, min_index, max_index, False, batch_size, step)
+        self.test_steps = (len(self.Data) - min_index - lookback) // batch_size
+        self.test_generator = self.generator(self.Data, lookback, delay, min_index, max_index, False, batch_size, step)
 
         # temp = data[:,1]
         # #plt.plot(range(len(temp)), temp)

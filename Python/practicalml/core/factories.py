@@ -17,6 +17,8 @@ class ModelFactory(object):
             network = ConvnetDogsVsCats(ml_config)
         elif(ml_config.NnType == 'lstm'):
             network = LstmRNN(ml_config)
+        elif(ml_config.NnType == 'gru'):
+            network = GruNN(ml_config)
         else:
             raise TypeError(f'Network type {ml_config.NnType} is not defined.')
         return network

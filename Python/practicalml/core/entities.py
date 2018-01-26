@@ -1,6 +1,6 @@
 import os
 
-class MLEntity(object):
+class MLEntityBase(object):
     def __init__(self):
         self.Base_Directory = os.path.abspath(os.path.join(os.getcwd(), '../../..'))
 
@@ -13,3 +13,13 @@ class MLEntity(object):
     def log(self, msg, verbosity='d'):
         if(self.Config.Verbose == verbosity):
             print(msg)
+
+class ModelMetrics(object):
+    def __init__(self, name, history, series_style='b'):
+        self.Name = name
+        self.History = history
+        self.SeriesStyle = series_style
+
+class Prediction(object):
+    def __init__(self):
+        pass

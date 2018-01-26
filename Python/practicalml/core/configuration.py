@@ -2,8 +2,39 @@ import numpy as np
 from keras import models
 from keras import layers
 
-class ModelParameters(object):
+class MLConfig(object):
+    def __init__(self, nn_type, mode, layers = 4, nodes = 16, epochs = 10, batch_size = 32, verbose = False):
+        self._verbose = verbose
+        self._nn_type = nn_type
+        # Properties probably aren't necessary, so experimenting with public fields
+        self.Layers = layers
+        self.Nodes = nodes
+        self._epochs = epochs
+        self.BatchSize = batch_size
+        self.TrainDir = ''
+        self.TestDir = ''
+        self.ValidationDir = ''
+        self.Mode = mode
+        self.ModelConfig = ModelParameters()
 
+    @property
+    def Verbose(self):
+        return self._verbose
+
+    @property
+    def NnType(self):
+        return self._nn_type
+
+    @NnType.setter
+    def NnType(self, nn_type):
+        self._nn_type = nn_type
+
+    @property
+    def Epochs(self):
+        return self._epochs
+
+
+class ModelParameters(object):
     @classmethod
     def build_model(cls, model_parameters):
         model = models.Sequential()
@@ -18,6 +49,9 @@ class ModelParameters(object):
     def __init__(self):
         self._metrics = []
         self._layers = []
+        self.LayerCount = 1
+        self.Dropout = 0
+        self.RecurrentDropout = 0
 
 
     @property
