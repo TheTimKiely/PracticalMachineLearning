@@ -1,15 +1,17 @@
 import getopt
-import sys
+import os, sys
 import numpy as np
 
-from practicalml.core.configuration import *
-from practicalml.core.data_container import DataContainer
-import practicalml, dl
-from practicalml.core.entities import *
-from practicalml.core.plotting import *
-from practicalml.dl.neuralnetworks import ConvnetDogsVsCats
-from practicalml.core.utils import ProcessorInfo
-from practicalml.core.factories import ModelFactory
+print(os.getcwd())
+sys.path.append(os.getcwd())
+from core.configuration import *
+from core.data_container import DataContainer
+from core.entities import *
+from core.plotting import *
+from dl.neuralnetworks import ConvnetDogsVsCats
+from core.utils import ProcessorInfo
+from core.factories import ModelFactory
+from core.utils import *
 
 def parse_command_line(params):
     layers = 3
@@ -68,6 +70,7 @@ def climate_prediction(dataset, sample_size, ml_config):
     data_container.prepare_data(sample_size)
     metrics = []
 
+    '''
     ml_model = ModelFactory.create(ml_config)
     if ml_model.Config.Mode == 't':
         ml_model.build_model(data_container)
@@ -78,12 +81,13 @@ def climate_prediction(dataset, sample_size, ml_config):
     #ml_history = ml_model.evaluate()
     ml_metrics = ModelMetrics('MlMetrics', ml_history, 'bo')
     metrics.append(ml_metrics)
+    '''
 
     ml_config.NnType = 'gru'
     gru_model = ModelFactory.create(ml_config)
     gru_model.build_model(data_container)
     gru_history = gru_model.fit_and_save()
-    gru_metrics = ModelMetrics('GruMetrics', gru_history, 'r')
+    gru_metrics = ModelMetrics('GruMetrics', gru_history, ('b', 'r'))
     metrics.append(gru_metrics)
 
 
@@ -92,14 +96,14 @@ def climate_prediction(dataset, sample_size, ml_config):
     gru_dropout_model = ModelFactory.create(ml_config)
     gru_dropout_model.build_model(data_container)
     gru_dropout_history = gru_model.fit_and_save()
-    gru_dropout_metrics = ModelMetrics('GruDropoutMetrics', gru_dropout_history, 'g')
+    gru_dropout_metrics = ModelMetrics('GruDropoutMetrics', gru_dropout_history, ('g', 'c'))
     metrics.append(gru_dropout_metrics)
 
     ml_config.ModelConfig.LayerCount = 2
     gru_two_layers_model = ModelFactory.create(ml_config)
     gru_two_layers_model.build_model(data_container)
     gru_two_layers_history = gru_model.fit_and_save()
-    gru_two_layers_metrics = ModelMetrics('GruDropoutMetrics', gru_two_layers_history, 'k')
+    gru_two_layers_metrics = ModelMetrics('GruDropoutMetrics', gru_two_layers_history, ('k','m'))
     metrics.append(gru_two_layers_metrics)
 
     plotter = MetricsPlotter()
@@ -109,8 +113,10 @@ def climate_prediction(dataset, sample_size, ml_config):
 def main(params):
     print(f'Running main with args: {params}')
     dataset, sample_size, ml_config = parse_command_line(params)
-
+    ml_config.Instrumentation = Instrumentation()
+    ml_config.Instrumentation.Timer.start()
     climate_prediction(dataset, sample_size, ml_config)
+    print(f'Time: {ml_config.Instrumentation.Timer.split()}')
     exit()
 
     network = ModelFactory.create(ml_config)
