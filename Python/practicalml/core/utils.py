@@ -18,7 +18,7 @@ class Timer(object):
     def start_split(self, name):
         self.Splits.append(Split(name, time.time()))
 
-    def get_split(self, name):
+    def get_split(self, name = None):
         if name == None:
             return time.time() - self.StartTime
         if self.Splits[name] == None:

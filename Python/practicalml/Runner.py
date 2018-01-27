@@ -84,7 +84,7 @@ def climate_prediction(dataset, sample_size, ml_config):
     '''
 
     ml_config.NnType = 'gru'
-    gru_model = ModelFactory.create(ml_config)
+    gru_model = ModelFactory.create('GRU Simple', ml_config)
     gru_model.build_model(data_container)
     gru_history = gru_model.fit_and_save()
     gru_metrics = ModelMetrics('GruMetrics', gru_history, ('b', 'r'))
@@ -93,22 +93,22 @@ def climate_prediction(dataset, sample_size, ml_config):
 
     ml_config.ModelConfig.Dropout = 0.2
     ml_config.ModelConfig.RecurrentDropout = 0.2
-    gru_dropout_model = ModelFactory.create(ml_config)
+    gru_dropout_model = ModelFactory.create('GRU Dropout', ml_config)
     gru_dropout_model.build_model(data_container)
-    gru_dropout_history = gru_model.fit_and_save()
+    gru_dropout_history = gru_dropout_model.fit_and_save()
     gru_dropout_metrics = ModelMetrics('GruDropoutMetrics', gru_dropout_history, ('g', 'c'))
     metrics.append(gru_dropout_metrics)
 
     ml_config.ModelConfig.LayerCount = 2
-    gru_two_layers_model = ModelFactory.create(ml_config)
+    gru_two_layers_model = ModelFactory.create('GRU 2 Layers', ml_config)
     gru_two_layers_model.build_model(data_container)
-    gru_two_layers_history = gru_model.fit_and_save()
-    gru_two_layers_metrics = ModelMetrics('GruDropoutMetrics', gru_two_layers_history, ('k','m'))
+    gru_two_layers_history = gru_two_layers_model.fit_and_save()
+    gru_two_layers_metrics = ModelMetrics('Gru2LayersMetrics', gru_two_layers_history, ('k','m'))
     metrics.append(gru_two_layers_metrics)
 
     plotter = MetricsPlotter()
     plotter.plot_histories(metrics, ((0, ('loss', 'val_loss')),))
-    plotter.save()
+    plotter.save('Test.png')
     plotter.show()
 
 
@@ -118,7 +118,7 @@ def main(params):
     ml_config.Instrumentation = Instrumentation()
     ml_config.Instrumentation.Timer.start()
     climate_prediction(dataset, sample_size, ml_config)
-    print(f'Time: {ml_config.Instrumentation.Timer.split()}')
+    print(f'Time: {ml_config.Instrumentation.Timer.get_split()}')
     exit()
 
     network = ModelFactory.create(ml_config)
@@ -161,7 +161,7 @@ if(__name__ == '__main__'):
     climate_lstm_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'lstm', '-m', 't', '-e', '10', '-n',
                            '64', '-b', 32, '-v', 'd']
     climate_ml_params = ['-m', 't', '-s', '200000', '-d', 'jena_climate', '-t', 'ml', '-l', 'mae', '-o', 'rmsprop',
-                         '-e', '20', '-n',
+                         '-e', '10', '-n',
                            '64', '-b', 32, '-v', 'd']
     climate_math_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'math', '-m', 't', '-e', '10', '-n', '64', '-b', 32, '-v', 'd']
     main(climate_ml_params)

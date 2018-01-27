@@ -9,8 +9,9 @@ from keras.optimizers import RMSprop
 
 # ABS for ML and DL models
 class MLModelBase(MLEntityBase):
-    def __init__(self, ml_config):
+    def __init__(self, name, ml_config):
         super(MLModelBase, self).__init__()
+        self.Name = name
         self.Config = ml_config
         self._model_file_attribute = 0
         self._weights_file_attribute = 0
@@ -155,8 +156,8 @@ class MathModel(MLModelBase):
         return batch_maes
 
 class MLModel(MLModelBase):
-    def __init__(self, ml_config):
-        super(MLModel, self).__init__(ml_config)
+    def __init__(self, name, ml_config):
+        super(MLModel, self).__init__( name,ml_config)
 
     # Requires a DataContainer because we might need to know the data shape to initialize layers
     def build_model(self, data_container):
@@ -197,6 +198,7 @@ class MLModel(MLModelBase):
                                       verbose=2)
 
         '''
+        self.log(f'Training model: {self.Name}')
         history = self.Model.fit_generator(self.DataContainer.train_generator,
                        steps_per_epoch=500,
                        epochs=self.Config.Epochs,

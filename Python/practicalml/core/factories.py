@@ -4,21 +4,21 @@ from models.ml_models import *
 class ModelFactory(object):
 
     @classmethod
-    def create(cls, ml_config):
+    def create(cls, name, ml_config):
         if(ml_config.NnType == 'cnn'):
-            network = ConvolutionalNeuralNetwork(ml_config)
+            network = ConvolutionalNeuralNetwork( name,ml_config)
         elif(ml_config.NnType == 'math'):
-            network = MathModel(ml_config)
+            network = MathModel( name,ml_config)
         elif (ml_config.NnType == 'ml'):
-            network = MLModel(ml_config)
+            network = MLModel( name,ml_config)
         elif(ml_config.NnType == 'rnn'):
-            network = RecurrentNeuralNetwork(ml_config)
+            network = RecurrentNeuralNetwork( name,ml_config)
         elif(ml_config.NnType == 'DvsC'):
-            network = ConvnetDogsVsCats(ml_config)
+            network = ConvnetDogsVsCats( name,ml_config)
         elif(ml_config.NnType == 'lstm'):
-            network = LstmRNN(ml_config)
+            network = LstmRNN( name,ml_config)
         elif(ml_config.NnType == 'gru'):
-            network = GruNN(ml_config)
+            network = GruNN( name,ml_config)
         else:
             raise TypeError(f'Network type {ml_config.NnType} is not defined.')
         return network
