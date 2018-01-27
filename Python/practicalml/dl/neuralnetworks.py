@@ -9,11 +9,11 @@ from keras.models import Sequential
 from keras.layers import Flatten, Dense, Embedding, LSTM
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
-from practicalml.core.entities import MLEntityBase
-from practicalml.dl import keras_models
-from practicalml.core.configuration import ModelParameters
-from practicalml.core.plotting import Plotter
-from practicalml.models.ml_models import MLModel
+from core.entities import MLEntityBase
+from dl import keras_models
+from core.configuration import ModelParameters
+from core.plotting import Plotter
+from models.ml_models import MLModel
 
 
 class NeuralNetwork(MLModel):

@@ -108,7 +108,9 @@ def climate_prediction(dataset, sample_size, ml_config):
 
     plotter = MetricsPlotter()
     plotter.plot_histories(metrics, ((0, ('loss', 'val_loss')),))
+    plotter.save()
     plotter.show()
+
 
 def main(params):
     print(f'Running main with args: {params}')

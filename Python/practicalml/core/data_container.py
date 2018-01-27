@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from practicalml.core.entities import MLEntityBase
+from core.entities import MLEntityBase
 
 
 class DataContainer(MLEntityBase):

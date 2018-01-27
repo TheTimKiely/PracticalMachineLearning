@@ -1,5 +1,5 @@
-from practicalml.dl.neuralnetworks import *
-from practicalml.models.ml_models import *
+from dl.neuralnetworks import *
+from models.ml_models import *
 
 class ModelFactory(object):
 

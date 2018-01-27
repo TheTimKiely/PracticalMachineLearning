@@ -15,10 +15,10 @@ class MLEntityBase(object):
             print(msg)
 
 class ModelMetrics(object):
-    def __init__(self, name, history, series_style='b'):
+    def __init__(self, name, history, series_styles=('b','r')):
         self.Name = name
         self.History = history
-        self.SeriesStyle = series_style
+        self.SeriesStyles = series_styles
 
 class Prediction(object):
     def __init__(self):

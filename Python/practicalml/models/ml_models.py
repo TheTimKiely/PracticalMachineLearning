@@ -2,7 +2,7 @@ import os, time, dill
 import numpy as np
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Flatten
-from practicalml.core.entities import MLEntityBase
+from core.entities import MLEntityBase
 from keras import layers
 from keras.optimizers import RMSprop
 

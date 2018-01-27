@@ -3,8 +3,8 @@ import sys
 import time
 
 import numpy as np
-from PracticalMLCore.ModelParameters import ModelParameters
-from PracticalMLCore.PracticalMLUtils import *
+from ModelParameters import ModelParameters
+from PracticalMLUtils import *
 from keras.datasets import boston_housing
 
 from practicalml.core.ModelLayer import ModelLayer

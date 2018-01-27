@@ -13,6 +13,9 @@ class Plotter(object):
     def plot(self, x, y):
         plt.plot(x, y)
 
+    def save(self):
+        plt.savefig()
+        
     def show(self):
         plt.show()
 
@@ -35,12 +38,12 @@ class MetricsPlotter(Plotter):
     def plot_metrics(self, metrics, figures):
         history = metrics.History.history
         # change to metrics['loss']
-        for layout in figures:
+        for i, layout in enumerate(figures):
             plt.figure(layout[0])
             for series_name in layout[1]:
                 series_data = history[series_name]
                 epochs = range(1, len(series_data) + 1)
-                series = self.build_series(epochs, series_data, metrics.SeriesStyle, f'{metrics.Name} {series_name}')
+                series = self.build_series(epochs, series_data, metrics.SeriesStyles[i], f'{metrics.Name} {series_name}')
                 self.add_series(series)
 
         '''        
