@@ -194,8 +194,7 @@ class MLModel(MLModelBase):
                                       steps_per_epoch=500,
                                       epochs=self.Config.Epochs,
                                       validation_data=self.DataContainer.val_generator,
-                                      validation_steps=self.DataContainer.val_steps,
-                                      verbose=2)
+                                      validation_steps=self.DataContainer.val_steps)
 
         '''
         self.log(f'Training model: {self.Name}')
