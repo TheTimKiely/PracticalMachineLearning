@@ -161,7 +161,7 @@ if(__name__ == '__main__'):
     climate_lstm_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'lstm', '-m', 't', '-e', '10', '-n',
                            '64', '-b', 32, '-v', 'd']
     climate_ml_params = ['-m', 't', '-s', '200000', '-d', 'jena_climate', '-t', 'ml', '-l', 'mae', '-o', 'rmsprop',
-                         '-e', '10', '-n',
+                         '-e', '30', '-n',
                            '64', '-b', 32, '-v', 'd']
     climate_math_params = ['-s', '200000', '-d', 'jena_climate', '-t', 'math', '-m', 't', '-e', '10', '-n', '64', '-b', 32, '-v', 'd']
     main(climate_ml_params)
