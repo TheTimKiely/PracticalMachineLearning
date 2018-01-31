@@ -1,6 +1,5 @@
 import time
 import numpy as np
-from keras import models
 
 class Split(object):
     def __init__(self, name, start_time):
@@ -28,12 +27,6 @@ class Timer(object):
 class Instrumentation(object):
     def __init__(self):
         self.Timer = Timer()
-
-
-def build_model(model_params):
-    model = models.Sequential
-
-    return model
 
 def vectorize_sequece(sequence, dimensions=10000):
     results = np.zeros((len(sequence), dimensions))
